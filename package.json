@@ -1,0 +1,16 @@
+{
+  "name": "t2",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "parcel ./src/index.html -p 4000 --open",
+    "build": "parcel build ./src/index.html --no-source-maps"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parcel": "^2.8.3"
+  }
+}
