@@ -561,6 +561,7 @@ var _model = require("./model");
 var _utilsJs = require("./classes/utils.js");
 // init
 window.addEventListener("DOMContentLoaded", (event)=>{
+    localStorage.setItem("gameStatus", "not-started");
     (0, _model.loadModel)().then(()=>{
         (0, _utilsJs.render)();
         (0, _utilsJs.addListeners)();
@@ -672,6 +673,16 @@ class GameBlock extends Block {
     }
     //Return new question
     toHTML() {
+        if (this.qnum == 10) {
+            let end = $("<spawn/>");
+            end.classList = "badge bg-info";
+            end.style.fontSize = "20px";
+            end.style.margin = "2px";
+            end.style.padding = "2px";
+            end.style.borderRadius = "50%";
+            end.text("Game Over! you have answered " + localStorage.getItem("CorrectAnswer") + " questions correctly out of " + this.value.length);
+            return end;
+        }
         //Create category bade
         let category = document.createElement("span");
         category.innerHTML = "Category: " + localStorage.getItem("category");
@@ -725,6 +736,8 @@ class QuestionBlock extends Block {
                 this.correct_answer.style.classList = "btn btn-success";
             }
         });
+        //Run countdown
+        this.startCountdown();
     }
     getQuestion() {
         let buttons = [];
@@ -763,8 +776,14 @@ class QuestionBlock extends Block {
         q.classList = "badge bg-secondary";
         q.style.margin = "20px";
         q.style.fontSize = "30px";
+        let timer = document.createElement("span");
+        timer.id = "timer";
+        timer.classList = "badge bg-secondary";
+        timer.style.fontSize = "20px";
         let html = "";
         html += (0, _utils.row)((0, _utils.col)(q.outerHTML));
+        html += (0, _utils.row)("<br />");
+        html += (0, _utils.row)((0, _utils.col)(timer.outerHTML));
         html += (0, _utils.row)("<br />");
         html += this.getQuestion();
         return html;
@@ -839,6 +858,8 @@ var _block = require("./block");
 var _modelJs = require("../model.js");
 const row = (content)=>`<div class="row">${content}</div>`;
 const col = (content)=>`<div class="col-sm">${content}</div>`;
+let countdownIntervalId1;
+let countdownIntervalId2;
 const startGame = ()=>{
     let dif = localStorage.getItem("difficulty").toLowerCase();
     let category = document.querySelector("#categoryButton").innerHTML;
@@ -875,7 +896,10 @@ const render = ()=>{
     container.innerHTML = "";
     const html = (0, _modelJs.model).map((m)=>m.toHTML()).join("");
     container.insertAdjacentHTML("beforeend", html);
-    if (localStorage.getItem("gameStatus") === "started") AddAnswerListener();
+    if (localStorage.getItem("gameStatus") === "started") {
+        AddAnswerListener();
+        startCountdown();
+    }
 };
 const AddAnswerListener = ()=>{
     let caButton = document.getElementById("correct_answer");
@@ -890,18 +914,48 @@ const AddAnswerListener = ()=>{
                 answer.classList = "btn btn-danger";
                 caButton.classList = "btn btn-success";
             }
-            //Hold the question for 3 seconds
-            let seconds = 3;
-            let countdownIntervalId = setInterval(function() {
-                seconds--;
-                if (seconds <= 0) {
-                    clearInterval(countdownIntervalId);
-                    render();
-                }
-            }, 1000);
+            clearInterval(countdownIntervalId2);
+            nextQuestion();
         });
     });
 };
+function nextQuestion() {
+    //Hold the question for 3 seconds
+    let seconds = 3;
+    countdownIntervalId1 = setInterval(function() {
+        seconds--;
+        if (seconds <= 0) {
+            clearInterval(countdownIntervalId1);
+            render();
+        }
+    }, 1000);
+}
+// Function to start the countdown timer
+function startCountdown() {
+    let seconds = 30;
+    updateTimerUI(seconds);
+    countdownIntervalId2 = setInterval(function() {
+        seconds--;
+        updateTimerUI(seconds);
+        if (seconds <= 0) {
+            clearInterval(countdownIntervalId);
+            onTimerExpired();
+        }
+    }, 1000);
+}
+// Function to update the timer UI
+function updateTimerUI(seconds) {
+    document.getElementById("timer").textContent = `Time remaining: ${seconds} seconds`;
+    if (seconds <= 10) document.getElementById("timer").style.color = "red";
+}
+// Function to check if the timer has expired
+//Function for when the time expire
+function onTimerExpired() {
+    document.getElementById("timer").textContent = "Time's up!";
+    let caButton = document.getElementById("correct_answer");
+    caButton.classList = "btn btn-success";
+    nextQuestion();
+}
 const addListeners = ()=>{
     //Add listeners for the difficulty buttons
     document.querySelectorAll(".dif").forEach((button)=>{
@@ -971,9 +1025,9 @@ exports.export = function(dest, destName, get) {
 };
 
 },{}],"7lBIO":[function(require,module,exports) {
-module.exports = require("7ac8779f3ef172d8").getBundleURL("bLxZJ") + "logo-no-background.2f6d6cee.png" + "?" + Date.now();
+module.exports = require("474b65c31a7876a7").getBundleURL("bLxZJ") + "logo-no-background.2f6d6cee.png" + "?" + Date.now();
 
-},{"7ac8779f3ef172d8":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+},{"474b65c31a7876a7":"lgJ39"}],"lgJ39":[function(require,module,exports) {
 "use strict";
 var bundleURL = {};
 function getBundleURLCached(id) {

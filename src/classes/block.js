@@ -56,6 +56,16 @@ export class GameBlock extends Block{
     
    //Return new question
     toHTML(){
+        if(this.qnum == 10){
+            let end = $('<spawn/>')
+            end.classList = 'badge bg-info'
+            end.style.fontSize = '20px'
+            end.style.margin = '2px'
+            end.style.padding = '2px'
+            end.style.borderRadius = '50%'
+            end.text("Game Over! you have answered " + localStorage.getItem('CorrectAnswer') + " questions correctly out of " + this.value.length)
+            return end
+        }
         //Create category bade
         let category = document.createElement('span')
         category.innerHTML = 'Category: ' + localStorage.getItem('category')
@@ -119,7 +129,12 @@ export class QuestionBlock extends Block{
                 this.correct_answer.style.classList = "btn btn-success"
             }
         })
+
+        //Run countdown
+        this.startCountdown()
     }
+
+    
     
     getQuestion(){
         let buttons = []
@@ -168,8 +183,15 @@ export class QuestionBlock extends Block{
         q.style.margin = '20px'
         q.style.fontSize = '30px'
         
+        let timer = document.createElement('span')
+        timer.id = 'timer'
+        timer.classList = 'badge bg-secondary'
+        timer.style.fontSize = '20px'
+
         let html = ''
         html += row(col(q.outerHTML))
+        html += row('<br />')
+        html += row(col(timer.outerHTML))
         html += row('<br />')
         html += this.getQuestion()
         return html

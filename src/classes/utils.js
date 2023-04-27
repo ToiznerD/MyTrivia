@@ -4,6 +4,8 @@ import {model} from '../model.js'
 export const row = (content) => `<div class="row">${content}</div>`
 
 export const col = (content) => `<div class="col-sm">${content}</div>`
+let countdownIntervalId1
+let countdownIntervalId2
 
 export const startGame = () =>{
     let dif = localStorage.getItem('difficulty').toLowerCase()
@@ -52,6 +54,7 @@ export const render = () => {
     container.insertAdjacentHTML('beforeend', html)
     if (localStorage.getItem('gameStatus') === "started"){
         AddAnswerListener()
+        startCountdown()
     }
 }
 
@@ -69,21 +72,61 @@ export const AddAnswerListener = () => {
                 answer.classList = "btn btn-danger"
                 caButton.classList = "btn btn-success"
             }
-
-            //Hold the question for 3 seconds
-            let seconds = 3
-            let countdownIntervalId = setInterval(function() {
-                seconds--; 
-            
-                if (seconds <= 0) {
-                    clearInterval(countdownIntervalId)
-                    render()
-                }
-              }, 1000)
+            clearInterval(countdownIntervalId2)
+            nextQuestion()
         })
 
     })
+
 }
+
+function nextQuestion(){
+  //Hold the question for 3 seconds
+  let seconds = 3
+  countdownIntervalId1 = setInterval(function() {
+      seconds--; 
+  
+      if (seconds <= 0) {
+          clearInterval(countdownIntervalId1)
+          
+          render()
+      }
+    }, 1000)
+}
+
+  // Function to start the countdown timer
+  function startCountdown() {
+      let seconds = 30; 
+      updateTimerUI(seconds); 
+
+      countdownIntervalId2 = setInterval(function() {
+      seconds--; 
+      updateTimerUI(seconds); 
+
+      if (seconds <= 0) {
+          clearInterval(countdownIntervalId)
+          onTimerExpired();
+      }
+      }, 1000)
+  }
+
+  // Function to update the timer UI
+  function updateTimerUI(seconds) {
+      document.getElementById('timer').textContent = `Time remaining: ${seconds} seconds`
+      if (seconds <= 10){
+        document.getElementById('timer').style.color = "red"
+      }
+  }
+
+  // Function to check if the timer has expired
+  //Function for when the time expire
+  function onTimerExpired(){
+        document.getElementById('timer').textContent = "Time's up!"
+        
+        let caButton = document.getElementById('correct_answer')
+        caButton.classList = "btn btn-success"
+        nextQuestion()
+  }
     
  //Add listeners
  export const addListeners = () => {
